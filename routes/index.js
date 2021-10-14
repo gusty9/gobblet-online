@@ -27,6 +27,7 @@ router.get('/home', (req, res) => {
   if (req.player_id) {
     res.render('home');
   } else {
+
     res.redirect('/login');
   }
 });

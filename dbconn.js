@@ -29,18 +29,8 @@ module.exports.create_new_user = async (email, name, pass_hash, salt, auth_key) 
     let user_created = null;
     try {
         await client.query('BEGIN');
-        await client.query(queryText, [email, name, pass_hash, salt, auth_key], (err, results) => {
-            if (err) {
-                client.query('ROLLBACK');
-            }
-        });
-        await client.query('COMMIT', (err, results) => {
-            if (err) {
-                client.query('ROLLBACK');
-            }
-
-            console.log(user_created);
-        });
+        await client.query(queryText, [email, name, pass_hash, salt, auth_key]);
+        await client.query('COMMIT');
         user_created = true;
     } catch (er) {
         client.query('ROLLBACK');
@@ -68,11 +58,7 @@ module.exports.login_user = async(email, password) => {
         let salt;
         let hashed_pass;
         let player_id;
-        await client.query('SELECT * FROM player WHERE email = $1', [email], (err, results) => {
-            if (err || results.rowCount !== 1) {
-                client.query('ROLLBACK');
-                return auth_key;
-            }
+        await client.query('SELECT * FROM player WHERE email = $1', [email]).then ((results) => {
             player_id = results.rows[0].player_id;
             salt = results.rows[0].salt;
             hashed_pass = results.rows[0].pass_hash;
@@ -80,12 +66,7 @@ module.exports.login_user = async(email, password) => {
         //compare the hash and the salt to the one in the db
         if (hashed_pass === login_utils.get_hashed_password(password + salt)) {
             auth_key = login_utils.generate_random_data(30);
-            await client.query('UPDATE player SET auth_key = $1 WHERE player_id = $2', [auth_key, player_id], (err, results) => {
-                if (err) {
-                    client.query('ROLLBACK');
-                    return null;
-                }
-            });
+            await client.query('UPDATE player SET auth_key = $1 WHERE player_id = $2', [auth_key, player_id]);
             await client.query('COMMIT');
         }
     } catch (err) {
@@ -106,23 +87,18 @@ module.exports.login_user = async(email, password) => {
 module.exports.is_user_authenticated = async(auth_key) => {
     let player_id = null;
     const client = await conn.connect();
+    console.log(auth_key);
     try {
-        await client.query('SELECT * FROM player WHERE auth_key = $1', [auth_key], (error, results) => {
-            if (error) {
-                throw error;
-            }
+        await client.query('SELECT * FROM player WHERE auth_key = $1', [auth_key]).then((results) => {
             if (results.rows.length > 0) {
                 player_id = results.rows[0].player_id;
-            } else {
-                return player_id;
             }
         });
     } catch (err) {
-        throw (err);
+        console.log(err);
     } finally {
         client.release();
     }
-
     return player_id;
 }
 
@@ -145,19 +121,10 @@ module.exports.create_new_game = async(p1_id, board) => {
     try {
         await client.query('BEGIN');
         let board_id;
-        await client.query('INSERT INTO board(board_state) VALUES ($1) RETURNING board_id', [board.toString()], (err, results) => {
-            if (err) {
-
-                client.query('ROLLBACK');
-                return match_id;
-            }
+        await client.query('INSERT INTO board(board_state) VALUES ($1) RETURNING board_id', [board.toString()]).then ((results) => {
             board_id = results.rows[0].board_id;
         });
-        await conn.query('INSERT INTO match(player_1_id, board_id) VALUES ($1, $2) RETURNING match_id', [p1_id, board_id], (err, results) => {
-            if (err) {
-                client.query('ROLLBACK');
-                return match_id;
-            }
+        await conn.query('INSERT INTO match(player_1_id, board_id) VALUES ($1, $2) RETURNING match_id', [p1_id, board_id]).then ((results) => {
             match_id = results.rows[0].match_id;
         });
         await client.query('COMMIT');
@@ -173,21 +140,16 @@ module.exports.get_game_object = async (match_id) => {
     let game_object;
     const client = await conn.connect();
     try {
-
         await client.query('BEGIN');
-        await client.query('SELECT player_1_id, player_2_id, board_state FROM match, board WHERE match.match_id = $1 AND match.boad_id = board.board_id', [match_id], (err, results) => {
-            if (err) {
-                client.query('ROLLBACK');
-                return game_object;
-            }
+        await client.query('SELECT player_1_id, player_2_id, board_state FROM match, board WHERE match.match_id = $1 AND match.boad_id = board.board_id', [match_id]).then ((results) => {
             game_object = results.rows[0];
         });
         await client.query('COMMIT');
     } catch (err) {
         client.query('ROLLBACK');
-        return game_object
     } finally {
         client.release();
     }
+    return game_object
 }
 
