@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var dbconn = require('../dbconn');
 
 /* Get index page. */
 router.get('/', function(req, res, next) {
@@ -28,6 +29,14 @@ router.get('/home', (req, res) => {
   } else {
     res.redirect('/login');
   }
+});
+
+router.get('/match/:match_id', (req, res) => {
+  if (req.player_id) {
+    let game_object = dbconn.get_game_object(req.params.match_id);
+    res.render('match', {game_object: game_object});
+  }
+
 });
 
 module.exports = router;

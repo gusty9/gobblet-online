@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
 const login_utils = require('../utils/login_utils');
+const game_utils = require('../utils/game_utils')
 const dbconn = require('../dbconn');
 
 router.post('/register', (req, res) => {
     let {name, email, password, confirm_password} = req.body;
-    console.log(req.body);
     if (password === confirm_password && login_utils.validate_password(password)) {
         let salt = login_utils.generate_random_data(16);
         let hash = login_utils.get_hashed_password(password + salt);
         let auth_key = login_utils.generate_random_data(30);
-        dbconn.create_new_user(email, name, hash, salt, auth_key).then(user_created => {
+        dbconn.create_new_user(email, name, hash, salt, auth_key).then((user_created) => {
             if (user_created) {
                 res.cookie('auth_key', auth_key)
                 res.redirect('/home');
@@ -26,7 +26,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     let {email, password} = req.body;
-    dbconn.login_user(email, password).then(auth_key => {
+    dbconn.login_user(email, password).then((auth_key) => {
         if (auth_key) {
             res.cookie('auth_key', auth_key);
             res.redirect('/home');
@@ -34,6 +34,19 @@ router.post('/login', (req, res) => {
             res.redirect('/login');
         }
     });
+});
+//NMYyXqJgzbyZn8P#
+router.post('/create_game', (req, res) => {
+    if (req.player_id) {
+        let blank_board = game_utils.create_blank_board(req.player_id);
+        dbconn.create_new_game(req.player_id, blank_board).then((match_id) => {
+            //once given the match_id
+            //1. forward that user to that match webpage
+            res.redirect('/match/' + match_id);
+        });
+    } else {
+        res.redirect('/error');
+    }
 });
 
 module.exports = router;

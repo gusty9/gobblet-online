@@ -20,9 +20,9 @@ CREATE TABLE board
 CREATE TABLE match
 (
     match_id        serial          PRIMARY KEY,
-    player_1_id     INT,
+    player_1_id     INT             NOT NULL,
     player_2_id     INT,
-    board_id        INT,
+    board_id        INT             NOT NULL,
     CONSTRAINT fk
         FOREIGN KEY(player_1_id)
             REFERENCES player(player_id),

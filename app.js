@@ -24,9 +24,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   const auth_key = req.cookies['auth_key'];
   if (auth_key) {
-    req.player_id = dbconn.is_user_authenticated(auth_key);
+    dbconn.is_user_authenticated(auth_key).then((player_id) => {
+      req.player_id = player_id;
+      next();
+    });
+  } else {
+    next()
   }
-  next();
 });
 
 app.use('/', indexRouter);

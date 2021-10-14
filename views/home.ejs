@@ -1,3 +1,20 @@
 <h1>Welcome to goblet</h1>
-<a>create game</a>
-<a>join game</a>
+<div class="container">
+    <form method="POST" action="/api/create_game">
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Create Game</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <form method="POST" action="/api/join_game">
+        <div class="d-flex justify-content-center">
+            <div class="form-group">
+                <label for="gameid">Game ID</label>
+                <input name="gameid" type="text" class="form-control" id="gameid" placeholder="Enter game id">
+            </div>
+            <button type="submit" class="btn btn-primary">Join Game</button>
+        </div>
+    </form>
+</div>
