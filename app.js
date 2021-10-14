@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var dbconn = require('./dbconn');
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
 
@@ -18,6 +19,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//check to see if the user is authenticated before forwarding them to the frontend and api router
+app.use((req, res, next) => {
+  const auth_key = req.cookies['auth_key'];
+  if (auth_key) {
+    req.player_id = dbconn.is_user_authenticated(auth_key);
+  }
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
