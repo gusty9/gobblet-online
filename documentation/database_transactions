@@ -1,0 +1,44 @@
+-----------------------
+-- USER TRANSACTIONS --
+-----------------------
+
+-- transaction for creating a new user
+BEGIN TRANSACTION;
+    INSERT INTO player(email, name, pass_hash, salt, auth_key) VALUES ($1, $2, $3, $4, $5);
+END TRANSACTION;
+
+-- transaction for logging in a user
+BEGIN TRANSACTION;
+    SELECT * FROM player WHERE player.email = $1;
+END TRANSACTION;
+
+------------------------
+-- BOARD TRANSACTIONS --
+------------------------
+-- transaction for updating a board
+
+------------------------
+-- MATCH TRANSACTIONS --
+------------------------
+-- transaction for player 1 creating a board and match
+BEGIN TRANSACTION;
+    --create a new board
+    INSERT INTO board(board_state) VALUES ($1) RETURNING board_id INTO b_id;
+    --get the player id of the player creating the match
+    SELECT player_id INTO p1_id FROM player WHERE auth_key = $1;
+    --create the match
+    INSERT INTO match (player_1_id, board_id) VALUES (p1_id, b_id);
+END TRANSACTION;
+-- todo make this work --
+-- transaction for player 1 creating a board and match
+BEGIN TRANSACTION;
+    --create a new board
+    INSERT INTO board(board_state) VALUES ('test') RETURNING board_id AS b_id;
+    --get the player id of the player creating the match
+    SELECT player_id INTO p1_id FROM player WHERE auth_key = 'def';
+    --create the match
+    INSERT INTO match (player_1_id, board_id) VALUES (p1_id, b_id);
+END TRANSACTION;
+
+
+-- transaction for player 2 joining a match

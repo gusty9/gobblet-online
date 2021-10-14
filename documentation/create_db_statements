@@ -1,0 +1,8 @@
+CREATE USER api WITH PASSWORD '#secret_api_password!#1234AAA#';
+-- todo research what privileges I should be giving the api to the database
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO api;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO api;
+
+CREATE DATABASE goblet;
+
+\c goblet;
