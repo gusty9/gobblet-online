@@ -24,6 +24,9 @@ router.post('/register', (req, res) => {
     }
 });
 
+/**
+ * A user posting email and password credentials to authenticate
+ */
 router.post('/login', (req, res) => {
     let {email, password} = req.body;
     dbconn.login_user(email, password).then((auth_key) => {
@@ -35,13 +38,15 @@ router.post('/login', (req, res) => {
         }
     });
 });
-//NMYyXqJgzbyZn8P#
+
+/**
+ * call from the user to create a new game.
+ * Check that the user is verified, then redirect them to their match
+ */
 router.post('/create_game', (req, res) => {
     if (req.player_id) {
         let blank_board = game_utils.create_blank_board(req.player_id);
         dbconn.create_new_game(req.player_id, blank_board).then((match_id) => {
-            //once given the match_id
-            //1. forward that user to that match webpage
             res.redirect('/match/' + match_id);
         });
     } else {

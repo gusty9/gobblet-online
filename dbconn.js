@@ -112,19 +112,15 @@ module.exports.is_user_authenticated = async(auth_key) => {
  *          the match id if successfully created, null otherwise
  */
 module.exports.create_new_game = async(p1_id, board) => {
-    //to create a new game
-    // 1 -> create a new board and get the board id
-    // 2 -> insert into match the board id and player1_id
-    // 3 -> return the match_id
-    let match_id;
     const client = await conn.connect();
+    let match_id;
+    let board_id
     try {
         await client.query('BEGIN');
-        let board_id;
         await client.query('INSERT INTO board(board_state) VALUES ($1) RETURNING board_id', [board.toString()]).then ((results) => {
-            board_id = results.rows[0].board_id;
+           board_id = results.rows[0].board_id;
         });
-        await conn.query('INSERT INTO match(player_1_id, board_id) VALUES ($1, $2) RETURNING match_id', [p1_id, board_id]).then ((results) => {
+        await client.query('INSERT INTO match(player_1_id, board_id) VALUES ($1, $2) RETURNING match_id', [p1_id, board_id]).then ((results) => {
             match_id = results.rows[0].match_id;
         });
         await client.query('COMMIT');
@@ -136,6 +132,13 @@ module.exports.create_new_game = async(p1_id, board) => {
     return match_id;
 }
 
+/**
+ * Return the game object of a particular match
+ * @param match_id
+ *          the match being played
+ * @returns {Promise<*>}
+ *          the json game object
+ */
 module.exports.get_game_object = async (match_id) => {
     let game_object;
     const client = await conn.connect();
