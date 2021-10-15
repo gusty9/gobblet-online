@@ -25,7 +25,6 @@ app.use((req, res, next) => {
   const auth_key = req.cookies['auth_key'];
   if (auth_key) {
     dbconn.is_user_authenticated(auth_key).then((player_id) => {
-      // console.log(player_id);
       req.player_id = player_id;
       next();
     });

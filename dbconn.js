@@ -87,7 +87,6 @@ module.exports.login_user = async(email, password) => {
 module.exports.is_user_authenticated = async(auth_key) => {
     let player_id = null;
     const client = await conn.connect();
-    console.log(auth_key);
     try {
         await client.query('SELECT * FROM player WHERE auth_key = $1', [auth_key]).then((results) => {
             if (results.rows.length > 0) {
@@ -95,7 +94,7 @@ module.exports.is_user_authenticated = async(auth_key) => {
             }
         });
     } catch (err) {
-        console.log(err);
+        console.err(err);
     } finally {
         client.release();
     }
@@ -156,3 +155,27 @@ module.exports.get_game_object = async (match_id) => {
     return game_object
 }
 
+/**
+ * Update the data base so the match has a player 2
+ * @param match_id
+ *        the match to update
+ * @param p2_id
+ *          the player to make player to
+ * @returns {Promise<*>}
+ *          true if operation completed successfully
+ */
+module.exports.add_player2_to_match = async (match_id, p2_id) => {
+    let created;
+    const client = await conn.connect();
+    try {
+        await client.query('BEGIN');
+        await client.query('UPDATE match SET player_2_id = $1 WHERE match_id = $2', [p2_id, match_id]).then((result) => {
+            created = true;
+        });
+    } catch (err) {
+        console.err(err);
+    } finally {
+        client.release()
+    }
+    return created;
+}

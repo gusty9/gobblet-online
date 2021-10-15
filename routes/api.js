@@ -4,6 +4,10 @@ const login_utils = require('../utils/login_utils');
 const game_utils = require('../utils/game_utils')
 const dbconn = require('../dbconn');
 
+
+/**
+ * A new user requesting an account
+ */
 router.post('/register', (req, res) => {
     let {name, email, password, confirm_password} = req.body;
     if (password === confirm_password && login_utils.validate_password(password)) {
@@ -51,6 +55,22 @@ router.post('/create_game', (req, res) => {
         });
     } else {
         res.redirect('/error');
+    }
+});
+
+/**
+ * Request for when a user is attempting to join a new match based on match id
+ */
+router.post('/join_game', (req, res) => {
+    if (req.player_id) {
+        let { match_id } = req.body;
+        dbconn.add_player2_to_match(match_id, req.player_id).then((created) => {
+            if (created) {
+                res.redirect('/match/' + match_id);
+            } else {
+                res.redirect('/home/');
+            }
+        });
     }
 });
 
