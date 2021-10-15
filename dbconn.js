@@ -116,7 +116,7 @@ module.exports.create_new_game = async(p1_id, board) => {
     let board_id
     try {
         await client.query('BEGIN');
-        await client.query('INSERT INTO board(board_state) VALUES ($1) RETURNING board_id', [board.toString()]).then ((results) => {
+        await client.query('INSERT INTO board(board_state) VALUES ($1) RETURNING board_id', [JSON.stringify(board)]).then ((results) => {
            board_id = results.rows[0].board_id;
         });
         await client.query('INSERT INTO match(player_1_id, board_id) VALUES ($1, $2) RETURNING match_id', [p1_id, board_id]).then ((results) => {
@@ -139,15 +139,17 @@ module.exports.create_new_game = async(p1_id, board) => {
  *          the json game object
  */
 module.exports.get_game_object = async (match_id) => {
-    let game_object;
     const client = await conn.connect();
+    let game_object = null;
     try {
         await client.query('BEGIN');
-        await client.query('SELECT player_1_id, player_2_id, board_state FROM match, board WHERE match.match_id = $1 AND match.boad_id = board.board_id', [match_id]).then ((results) => {
+        await client.query('SELECT player_1_id, player_2_id, board_state FROM match, board WHERE match.match_id = $1 AND match.board_id = board.board_id', [match_id]).then ((results) => {
             game_object = results.rows[0];
+            game_object.board_state = JSON.parse(game_object.board_state);
         });
         await client.query('COMMIT');
     } catch (err) {
+        console.log(err);
         client.query('ROLLBACK');
     } finally {
         client.release();

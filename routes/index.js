@@ -34,10 +34,17 @@ router.get('/home', (req, res) => {
 
 router.get('/match/:match_id', (req, res) => {
   if (req.player_id) {
-    let game_object = dbconn.get_game_object(req.params.match_id);
-    res.render('match', {game_object: game_object});
+    dbconn.get_game_object(req.params.match_id).then((game_object) => {
+      if (game_object) {
+        console.log(game_object);
+        res.render('match', {game_object: game_object, match_id: req.params.match_id});
+      } else {
+        res.redirect('/error/');
+      }
+    });
+  } else {
+    res.redirect( '/');
   }
-
 });
 
 module.exports = router;

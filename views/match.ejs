@@ -2,4 +2,12 @@
 <h1>Match</h1>
 
 <script src="/socket.io/socket.io.js"></script>
+<script>
+    let socket = io();
+
+    socket.on('connect', function(){
+        //todo replace 123 with the room number that is supposed to be placed
+        socket.emit('room', <%= match_id %>);
+    });
+</script>
 <script src="/javascripts/match.js"></script>
