@@ -6,3 +6,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+.p0 {
+  background-color: beige;
+}
+
+.p1 {
+  background-color: blue;
+}
+
+.p2 {
+  background-color: red;
+}
+
+.board-square {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  font-size: 30px;
+  text-align: center;
+}

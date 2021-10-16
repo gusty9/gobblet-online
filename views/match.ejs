@@ -1,5 +1,67 @@
+<%- include('header.ejs'); %>
 
-<h1>Match</h1>
+<h1>Match id: <%= match_id %></h1>
+
+<h5>Current turn: <%= view_object.current_turn %></h5>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3 board-square <%='p' + view_object.b00.owner %>"><%= view_object.b00.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b01.owner %>"><%= view_object.b01.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b02.owner %>"><%= view_object.b02.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b03.owner %>"><%= view_object.b03.top %></div>
+    </div>
+    <div class="row">
+        <div class="col-3 board-square <%='p' + view_object.b10.owner %>"><%= view_object.b10.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b11.owner %>"><%= view_object.b11.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b12.owner %>"><%= view_object.b12.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b13.owner %>"><%= view_object.b13.top %></div>
+    </div>
+    <div class="row">
+        <div class="col-3 board-square <%='p' + view_object.b20.owner %>"><%= view_object.b20.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b21.owner %>"><%= view_object.b21.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b22.owner %>"><%= view_object.b22.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b23.owner %>"><%= view_object.b23.top %></div>
+    </div>
+    <div class="row">
+        <div class="col-3 board-square <%='p' + view_object.b30.owner %>"><%= view_object.b30.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b31.owner %>"><%= view_object.b31.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b32.owner %>"><%= view_object.b32.top %></div>
+        <div class="col-3 board-square <%='p' + view_object.b33.owner %>"><%= view_object.b33.top %></div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-5">
+        <div class="row">
+            <div class="col-4 board-square p1">
+                <%= view_object.r10 %>
+            </div>
+            <div class="col-4 board-square p1">
+                <%= view_object.r11 %>
+            </div>
+            <div class="col-4 board-square p1">
+                <%= view_object.r12 %>
+            </div>
+        </div>
+    </div>
+    <div class="col-2">
+
+    </div>
+    <div class="col-5">
+        <div class="row">
+            <div class="col-4 board-square p2">
+                <%= view_object.r20 %>
+            </div>
+            <div class="col-4 board-square p2">
+                <%= view_object.r21 %>
+            </div>
+            <div class="col-4 board-square p2">
+                <%= view_object.r22 %>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>

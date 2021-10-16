@@ -53,8 +53,8 @@ let get_owner = (arr) => {
  *          formatted data for the view engine
  */
 module.exports.game_object_to_view_object = (game_object) => {
-    console.log(game_object);
     let ret = {};
+    ret.current_turn = game_object.current_turn;
     for (let i = 1; i <= 2; i++) {
         for (let j = 0; j <= 2; j++) {
             if (i === 1) {
